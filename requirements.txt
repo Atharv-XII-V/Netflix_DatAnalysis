@@ -1,0 +1,4 @@
+Streamlit
+SQLite3
+Ploty Express
+Pandas
