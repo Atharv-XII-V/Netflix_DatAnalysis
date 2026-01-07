@@ -1,4 +1,22 @@
-Streamlit
-SQLite3
-Ploty Express
-Pandas
+Data Cleaning — Linux Command Line
+Tools involved
+awk
+sed
+cut
+tr
+sort
+uniq
+head, tail
+csvkit
+
+
+Data Analysis — SQL (SQLite) + Python
+Tools used
+sqlite3
+SQL (SELECT, GROUP BY, COUNT, ORDER BY, JOIN logic)
+
+
+Python (Streamlit + Pandas) — Analytical Presentation
+pandas (grouping, filtering)
+streamlit (interactive UI)
+plotly (charts)
