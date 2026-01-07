@@ -180,27 +180,48 @@ if content_type == "Movies":
     tvshows_f = tvshows_f.iloc[0:0]
 elif content_type == "TV Shows":
     movies_f = movies_f.iloc[0:0]
+movies_f = movies_f.reset_index(drop=True)
+tvshows_f = tvshows_f.reset_index(drop=True)
 
 # ------------------------------------------------------------
 # GENRE FILTER (via normalized tables)
 # ------------------------------------------------------------
 if genre_filter:
-    conn = get_connection()
+    conn = sqlite3.connect(DB_PATH)
 
-    movie_ids = pd.read_sql("""
+    movie_ids = pd.read_sql(
+        f"""
         SELECT DISTINCT rowid
         FROM movie_genres
-        WHERE genre IN ({})
-    """.format(",".join(f"'{g}'" for g in genre_filter)), conn)
+        WHERE genre IN ({','.join('?' for _ in genre_filter)})
+        """,
+        conn,
+        params=genre_filter
+    )["rowid"].tolist()
 
-    tv_ids = pd.read_sql("""
+    tv_ids = pd.read_sql(
+        f"""
         SELECT DISTINCT rowid
         FROM tvshow_genres
-        WHERE genre IN ({})
-    """.format(",".join(f"'{g}'" for g in genre_filter)), conn)
+        WHERE genre IN ({','.join('?' for _ in genre_filter)})
+        """,
+        conn,
+        params=genre_filter
+    )["rowid"].tolist()
 
-    movies_f = movies_f.loc[movie_ids["rowid"]] if not movie_ids.empty else movies_f.iloc[0:0]
-    tvshows_f = tvshows_f.loc[tv_ids["rowid"]] if not tv_ids.empty else tvshows_f.iloc[0:0]
+    conn.close()
+
+    movies_f = (
+        movies_f[movies_f.index.isin(movie_ids)]
+        if movie_ids else movies_f.iloc[0:0]
+    )
+
+    tvshows_f = (
+        tvshows_f[tvshows_f.index.isin(tv_ids)]
+        if tv_ids else tvshows_f.iloc[0:0]
+    )
+
+
 
 # ------------------------------------------------------------
 # KPI METRICS
